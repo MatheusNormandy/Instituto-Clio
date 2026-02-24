@@ -421,15 +421,31 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   .hero-headline { font-size: clamp(3.25rem, 4.2vw, 4.5rem); }
 }
 @media (max-width: 767px) {
-  .hero { min-height: auto; padding-top: 5.5rem; padding-bottom: 2.5rem; }
-  .hero-headline { font-size: 2.125rem; }
-  .hero-visual { max-width: 280px; order: -1; }
-  .hero-metrics { gap: 1.25rem; flex-wrap: wrap; }
-  .metric-value { font-size: 1.375rem; }
+  .hero { min-height: auto; padding-top: 6.5rem; padding-bottom: 2.5rem; }
+  .hero-grid { text-align: center; justify-items: center; }
+  .hero-text { display: flex; flex-direction: column; align-items: center; }
+  .hero-badge { margin: 0 auto 1.5rem auto; }
+  .hero-headline { font-size: clamp(2.125rem, 8vw, 3rem); line-height: 1.1; margin-bottom: 1.25rem; }
+  
+  /* Permita wrap limpo se as palavras excederem a largura do device: */
+  .line-mask { display: inline-block; white-space: normal; }
+  
+  .hero-sub { text-align: center; margin: 0 auto 2rem auto; font-size: 1rem; max-width: 90%; }
+  .hero-ctas { justify-content: center; flex-direction: column; width: 100%; gap: 1rem; }
+  .cta-primary, .cta-secondary { width: 100%; justify-content: center; text-align: center; }
+  
+  /* Visual acima do texto, alinhado e escalado suavemente */
+  .hero-visual { max-width: 260px; order: -1; margin-bottom: 1.5rem; }
+  
   .scroll-indicator { display: none; }
   .grid-lines .grid-line:nth-child(2),
   .grid-lines .grid-line:nth-child(3) { display: none; }
-  .hero-cards { gap: 1rem; }
+  
+  /* Cards de Projetos / Serviço com mais respiro */
+  .hero-cards { gap: 1.5rem; padding-top: 1.5rem; }
+  .project-fold { padding: 4rem var(--nav-pad); gap: 2rem; }
+  .pf-title { font-size: 2.2rem; }
+  .pf-image-wrap { margin-top: 1rem; border-radius: 1.5rem; }
 }
 
 /* ========== PORTFOLIO & SECTIONS ========== */
@@ -1005,33 +1021,59 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // ===== HERO ANIMATION TIMELINE =====
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+  let mm = gsap.matchMedia();
 
-  // Badge
-  tl.to('#heroBadge', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.2);
+  mm.add("(min-width: 768px)", () => {
+    // Desktop Timeline
+    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-  // Masked word reveal — design-system: y:100%→0%, power4.out, 1.5s, stagger 0.15s
-  tl.fromTo('.reveal-text',
-    { y: '115%' },
-    { y: '0%', duration: 1.5, stagger: 0.15 },
-    0.5
-  );
+    tl.to('#heroBadge', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.2);
+    tl.fromTo('.reveal-text', { y: '115%' }, { y: '0%', duration: 1.5, stagger: 0.15 }, 0.5);
+    tl.to('#heroSub', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 1.5);
+    tl.to('#heroCtas', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 1.8);
 
-  // Subheadline — design-system: opacity:0→1, y:20→0, power2.out, 1s
-  tl.to('#heroSub', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 1.5);
+    tl.to('#heroLogoWrap', {
+      opacity: 1, scale: 1, duration: 2, ease: 'elastic.out(1, 0.75)'
+    }, 0.8);
 
-  // CTAs
-  tl.to('#heroCtas', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 1.8);
+    tl.to('.orbital', { opacity: 1, duration: 1.5, stagger: 0.2, ease: 'power3.out' }, 1);
+    tl.fromTo('#networkCanvas', { opacity: 0 }, { opacity: 1, duration: 2, ease: 'power2.out' }, 0.6);
 
+    tl.to('.service-card', {
+      opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out'
+    }, 2.4);
 
+    tl.to('#scrollIndicator', { opacity: 1, duration: 1, ease: 'power2.out' }, 3);
+  });
 
-  // Logo reveal
-  tl.to('#heroLogoWrap', {
-    opacity: 1, scale: 1, duration: 2, ease: 'elastic.out(1, 0.75)'
-  }, 0.8);
+  mm.add("(max-width: 767px)", () => {
+    // Mobile Timeline
+    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-  // Orbital rings — design-system: scroll-reveal stagger
-  tl.to('.orbital', { opacity: 1, duration: 1.5, stagger: 0.2, ease: 'power3.out' }, 1);
+    // Ensure elements are pre-set gracefully for fade
+    gsap.set('.reveal-text', { y: 0, opacity: 0 });
+
+    tl.to('#heroLogoWrap', { opacity: 1, scale: 1, duration: 1.5, ease: 'back.out(1.4)' }, 0.2);
+    tl.fromTo('#networkCanvas', { opacity: 0 }, { opacity: 1, duration: 1.5 }, 0.2);
+    tl.to('.orbital', { opacity: 1, duration: 1, stagger: 0.1 }, 0.4);
+
+    tl.to('#heroBadge', { opacity: 1, y: 0, duration: 0.8 }, 0.6);
+    // Smooth reveal for words avoiding Y-axis clipping on breaks
+    tl.to('.reveal-text', { opacity: 1, y: 0, duration: 1, stagger: 0.1 }, 0.8);
+    tl.to('#heroSub', { opacity: 1, y: 0, duration: 0.8 }, 1.2);
+    tl.to('#heroCtas', { opacity: 1, y: 0, duration: 0.8 }, 1.4);
+
+    // Instead of timeline, trigger Service Cards on scroll since they are way below fold
+    gsap.utils.toArray('.service-card').forEach(card => {
+      gsap.fromTo(card,
+        { opacity: 0, y: 30 },
+        { 
+          y: 0, opacity: 1, duration: 1, ease: 'power3.out',
+          scrollTrigger: { trigger: card, start: "top 85%" }
+        }
+      );
+    });
+  });
 
   // Slow orbital rotation
   document.querySelectorAll('.orbital').forEach((ring, i) => {
@@ -1076,16 +1118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ringsYTo.forEach(to => to(0));
   });
 
-  // Canvas
-  tl.fromTo('#networkCanvas', { opacity: 0 }, { opacity: 1, duration: 2, ease: 'power2.out' }, 0.6);
-
-  // Service Cards — design-system scroll-reveal: opacity:0→1, y:50→0, power3.out, 1s, stagger
-  tl.to('.service-card', {
-    opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out'
-  }, 2.4);
-
-  // Scroll indicator
-  tl.to('#scrollIndicator', { opacity: 1, duration: 1, ease: 'power2.out' }, 3);
+  // scroll indicator removed from main flow since it's desktop-only
   gsap.to('#scrollIndicator', {
     opacity: 0, ease: 'none',
     scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=200', scrub: true }
