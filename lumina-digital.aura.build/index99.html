@@ -268,21 +268,25 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   position: relative; width: 100%; aspect-ratio: 1;
   max-width: 480px; margin: 0 auto;
   display: flex; align-items: center; justify-content: center;
+  perspective: 1200px;
 }
 .hero-visual-canvas {
   position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0;
 }
-.hero-logo-float {
+.hero-logo-wrapper {
   position: relative; z-index: 2; width: 55%; max-width: 260px;
-  filter: drop-shadow(0 8px 40px rgba(62,137,163,0.15));
   opacity: 0; transform: scale(0.8);
-  animation: logoBreathe 8s ease-in-out infinite alternate;
-  animation-play-state: paused;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
-.hero-logo-float.active { animation-play-state: running; }
+.hero-logo-float {
+  display: block; width: 100%; height: auto;
+  filter: drop-shadow(0 12px 40px rgba(62,137,163,0.35));
+  animation: logoBreathe 6s ease-in-out infinite alternate;
+}
 @keyframes logoBreathe {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-8px) scale(1.02); }
+  0% { transform: translateY(0); filter: drop-shadow(0 12px 30px rgba(62,137,163,0.25)); }
+  100% { transform: translateY(-12px); filter: drop-shadow(0 24px 60px rgba(62,137,163,0.45)); }
 }
 
 /* Orbital rings */
@@ -403,6 +407,222 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   .hero-cards { gap: 1rem; }
 }
 
+/* ========== PORTFOLIO & SECTIONS ========== */
+.section-pad {
+  padding: 8rem var(--nav-pad) 4rem;
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+.section-header {
+  margin-bottom: 5rem;
+  max-width: 48rem;
+}
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--color-text);
+}
+.section-title span {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+/* --- Alternating Project Fold --- */
+.project-fold {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 8rem var(--nav-pad);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .project-fold {
+    grid-template-columns: 1fr 1.1fr;
+    gap: 6vw;
+  }
+  .project-fold.reverse {
+    direction: rtl;
+  }
+  .project-fold.reverse > * {
+    direction: ltr;
+  }
+}
+.pf-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 2rem;
+  overflow: hidden;
+  background-color: var(--color-bg-alt2);
+  box-shadow: 0 30px 60px rgba(62,137,163,0.12);
+  /* Fix Safari border-radius overflow bug during animations: */
+  transform: translateZ(0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+}
+.pf-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Fiel ao tamanho do card */
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s ease;
+  will-change: transform;
+}
+.project-fold:hover .pf-image-wrap img {
+  transform: scale(1.08); /* Efeito ao colocar o mouse */
+}
+.pf-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.03);
+  pointer-events: none;
+}
+.pf-text {
+  max-width: 32rem;
+}
+.pf-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--color-text);
+  line-height: 1.1;
+  margin-bottom: 2rem;
+}
+.pf-title span {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: var(--color-primary);
+}
+.pf-desc {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--color-text-light);
+  font-weight: 300;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  position: relative;
+  z-index: 10;
+  background-color: var(--color-text); /* Cor contrastante / escura */
+  color: #fff;
+  padding: 6rem var(--nav-pad) 3rem;
+  border-top: none;
+}
+.footer-grid {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+@media (min-width: 800px) {
+  .footer-grid {
+    grid-template-columns: 1.5fr 1fr;
+  }
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.footer-logo {
+  width: 32px;
+  height: auto;
+  filter: brightness(0) invert(1); /* Deixa a logo branca */
+}
+.footer-brand span {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+.footer-text {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  max-width: 24rem;
+  margin-bottom: 2rem;
+}
+.footer-contact h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+.footer-contact p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+.footer-contact a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+.footer-contact a:hover {
+  opacity: 0.7;
+}
+.footer-socials {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.footer-socials a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+.footer-socials a:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+  transform: translateY(-3px);
+}
+.footer-bottom {
+  max-width: var(--container-max);
+  margin: 4rem auto 0;
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+}
+@media (min-width: 600px) {
+  .footer-bottom {
+    flex-direction: row;
+  }
+}
+
+
 /* ========== PREFERS REDUCED MOTION ========== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -502,7 +722,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
         <div class="orbital orbital-1"></div>
         <div class="orbital orbital-2"></div>
         <div class="orbital orbital-3"></div>
-        <img src="./logo-clio.png" alt="" class="hero-logo-float" id="heroLogo" aria-hidden="true"/>
+        <div class="hero-logo-wrapper" id="heroLogoWrap">
+          <img src="./logo-clio.png" alt="" class="hero-logo-float" id="heroLogo" aria-hidden="true"/>
+        </div>
       </div>
     </div>
 
@@ -567,7 +789,166 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   </div>
 </section>
 
-<!-- ========== SCRIPTS ========== -->
+<!-- ======================================== -->
+<!-- DOBRA 1: ESTAÇÃO DA MEMÓRIA URB.             -->
+<!-- ======================================== -->
+<section class="project-fold" id="emur">
+  <div class="pf-text reveal-fade">
+    <div class="section-tag">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      URB - Recife • 2014 - 2016
+    </div>
+    <h2 class="pf-title">Estação da Memória <span>Urbanística do Recife</span></h2>
+    <p class="pf-desc">A Estação da Memória Urbanística do Recife (EMUR) é um projeto em desenvolvimento que busca preservar e promover a história urbanística da cidade. Fruto de uma iniciativa conjunta entre a Autarquia de Urbanização do Recife (URB), o Instituto Clio e o Laboratório Liber da UFPE, a EMUR visa integrar novas perspectivas de conhecimento à pesquisa sobre a cidade. Seu principal objetivo é estudar e ressignificar o planejamento urbano, com foco na preservação histórica e na sustentabilidade.</p>
+  </div>
+  <div class="pf-image-wrap reveal-parallax">
+    <img src="./estacao_da_memoria.jpg" alt="Estação da Memória Urbanística do Recife" class="px-image" style="object-fit: contain; background-color: #fff; padding: 2rem;"/>
+    <div class="pf-overlay"></div>
+  </div>
+</section>
+
+<!-- ======================================== -->
+<!-- DOBRA 2: MEMORIAL JOAQUIM CAETANO        -->
+<!-- ======================================== -->
+<div style="background-color: var(--color-bg-alt); width: 100%;">
+<section class="project-fold reverse" id="joaquim-caetano">
+  <div class="pf-text reveal-fade">
+    <div class="section-tag">
+      <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      Embaixada do Reino dos Países Baixos • 2008
+    </div>
+    <h2 class="pf-title">Memorial Histórico <span>Joaquim Caetano</span></h2>
+    <p class="pf-desc">Resgatamos e tornamos públicos documentos de grande interesse para a história do Brasil, que foram coletados pelo Dr. Joaquim Caetano Silva e estavam em arquivos neerlandeses. O projeto envolveu a digitalização e tradução dos manuscritos, o desenvolvimento de um site com banco de dados online e a publicação do primeiro livro da coleção Joaquim Caetano.</p>
+  </div>
+  <div class="pf-image-wrap reveal-parallax">
+    <img src="./joaquim.jpg" alt="Memorial Histórico Joaquim Caetano" class="px-image" style="object-position: center;"/>
+    <div class="pf-overlay"></div>
+  </div>
+</section>
+</div>
+
+<!-- ======================================== -->
+<!-- DOBRA 3: BIBLIOTECA AIP                  -->
+<!-- ======================================== -->
+<section class="project-fold" id="biblioteca-aip">
+  <div class="pf-text reveal-fade">
+    <div class="section-tag">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      FUNDARPE • Abril a Agosto de 2012
+    </div>
+    <h2 class="pf-title">Restauração do Acervo <span>Biblioteca da AIP</span></h2>
+    <p class="pf-desc">Higienização e organização do acervo histórico e bibliográfico da Biblioteca da Associação de Imprensa de Pernambuco - AIP, abarcando o recondicionamento e a ambientação adequadas, finalizando com a inclusão de todo acervo em programa digital para otimização da consulta online e presencial.</p>
+  </div>
+  <div class="pf-image-wrap reveal-parallax">
+    <img src="./aip.jpg" alt="Associação de Imprensa de Pernambuco" class="px-image" style="object-fit: contain; background-color: #fff; padding: 2rem;"/>
+    <div class="pf-overlay"></div>
+  </div>
+</section>
+
+<!-- ======================================== -->
+<!-- DOBRA 4: DISCOS ROZENBLIT                -->
+<!-- ======================================== -->
+<div style="background-color: var(--color-bg-alt); width: 100%;">
+<section class="project-fold reverse" id="discos-rozenblit">
+  <div class="pf-text reveal-fade">
+    <div class="section-tag">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+      BNDES • 2010 a 2011
+    </div>
+    <h2 class="pf-title">Acervo Digital da Fábrica <span>de Discos Rozenblit</span></h2>
+    <p class="pf-desc">Elaboramos um projeto integral para a restauração, tratamento, migração de mídia e disponibilização democrática ao público do inestimável acervo fonográfico da extinta fábrica de discos Rozenblit. A proposta foi rigorosamente avaliada e aprovada técnica e administrativamente pelo BNDES através do seu Programa de Preservação de Acervos.</p>
+  </div>
+  <div class="pf-image-wrap reveal-parallax">
+    <img src="./9.jpg" alt="Fábrica de Discos Rozenblit" class="px-image" style="object-fit: cover;"/>
+    <div class="pf-overlay"></div>
+  </div>
+</section>
+</div>
+
+<!-- ======================================== -->
+<!-- DOBRA 5: PLATAFORMA INFÂNCIA & VIOLÊNCIA -->
+<!-- ======================================== -->
+<section class="project-fold" id="violencia-infancia">
+  <div class="pf-text reveal-fade">
+    <div class="section-tag">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Save the Children Suécia • 2007 a 2008
+    </div>
+    <h2 class="pf-title">Plataforma Virtual <span>Violência e Infância</span></h2>
+    <p class="pf-desc">Desenvolvimento de um sistema de repositório institucional que gerencia e disponibiliza livre acesso aos documentos digitais em PDF, englobando livros, relatórios e outros materiais bibliográficos socioculturais. O projeto também inclui a concessão contínua da licença de uso do software CLIO na administração do acervo digital.</p>
+  </div>
+  <div class="pf-image-wrap reveal-parallax">
+    <img src="./plataforma_virtual.avif" alt="Plataforma Virtual Violência e Infância" class="px-image" style="object-fit: cover;" />
+    <div class="pf-overlay"></div>
+  </div>
+</section>
+
+<!-- ======================================== -->
+<!-- DOBRA 6: INTELIGÊNCIA ARTIFICIAL CLIO    -->
+<!-- ======================================== -->
+<div style="background-color: var(--color-bg-alt); width: 100%;">
+<section class="project-fold reverse" id="inteligencia-artificial">
+  <div class="pf-text reveal-fade">
+    <div class="section-tag">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Instituto Clio • Pesquisa Atual
+    </div>
+    <h2 class="pf-title">ClioNet: Laboratório Neural <span>de Preservação</span></h2>
+    <p class="pf-desc">Adentrando a nova era da digitalização tecnológica, implementamos uma modelagem unificada gerada por Inteligência Artificial para extração automática de entidades e semântica de acervos massivos em fração de segundos. Este projeto prospecta a infraestrutura do futuro na Ciência da Informação, interligando o patrimônio histórico às gerações hiperconectadas.</p>
+  </div>
+  <div class="pf-image-wrap reveal-parallax">
+    <img src="./10.png" alt="ClioNet: Laboratório Neural" class="px-image" style="object-fit: cover;" />
+    <div class="pf-overlay"></div>
+  </div>
+</section>
+</div>
+
+<!-- ======================================== -->
+<!-- FOOTER                                   -->
+<!-- ======================================== -->
+<footer class="footer" id="contato">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="./logo-clio.png" alt="Instituto Clio Logo" class="footer-logo" />
+        <span>Instituto Clio</span>
+      </div>
+      <p class="footer-text">Onde a memória se torna infraestrutura do futuro. Ciência da informação, tecnologia e rigor científico aplicados à preservação do patrimônio cultural como ativo estratégico para a sociedade.</p>
+      
+      <div class="footer-socials">
+        <a href="#" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" aria-label="Twitter">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+      </div>
+    </div>
+    
+    <div>
+      <div class="footer-contact">
+        <h4>Fale Conosco</h4>
+        <p>E-mail: <a href="mailto:ict@institutoclio.org">ict@institutoclio.org</a></p>
+        <p>Tel: +55 (81) 99713-9123</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>© 2025 - Instituto Clio. Todos os direitos reservados.</p>
+    <div style="display:flex; gap:2rem;">
+      <a href="#" style="color:var(--color-primary); text-decoration:none;">Privacidade</a>
+      <a href="#" style="color:var(--color-primary); text-decoration:none;">Termos de Uso</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ======================================== -->
+<!-- SCRIPTS                                  -->
+<!-- ======================================== -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   gsap.registerPlugin(ScrollTrigger);
@@ -620,20 +1001,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // Logo reveal
-  tl.to('#heroLogo', {
-    opacity: 1, scale: 1, duration: 1.8, ease: 'power4.out',
-    onComplete: () => document.getElementById('heroLogo').classList.add('active')
+  tl.to('#heroLogoWrap', {
+    opacity: 1, scale: 1, duration: 2, ease: 'elastic.out(1, 0.75)'
   }, 0.8);
 
   // Orbital rings — design-system: scroll-reveal stagger
   tl.to('.orbital', { opacity: 1, duration: 1.5, stagger: 0.2, ease: 'power3.out' }, 1);
 
-  // Slow orbital rotation — reinterpreting marquee endless motion
+  // Slow orbital rotation
   document.querySelectorAll('.orbital').forEach((ring, i) => {
     gsap.to(ring, {
       rotation: i % 2 === 0 ? 360 : -360,
       duration: 100 + i * 30, repeat: -1, ease: 'none'
     });
+  });
+
+  // Parallax 3D mouse interaction
+  const visualWrap = document.getElementById('heroVisual');
+  const logoWrap = document.getElementById('heroLogoWrap');
+  const rings = document.querySelectorAll('.orbital');
+  
+  const xTo = gsap.quickTo(logoWrap, "x", {duration: 0.8, ease: "power3"});
+  const yTo = gsap.quickTo(logoWrap, "y", {duration: 0.8, ease: "power3"});
+  const rotXTo = gsap.quickTo(logoWrap, "rotationX", {duration: 0.8, ease: "power3"});
+  const rotYTo = gsap.quickTo(logoWrap, "rotationY", {duration: 0.8, ease: "power3"});
+  
+  const ringsXTo = Array.from(rings).map(r => gsap.quickTo(r, "x", {duration: 1.2, ease: "power3"}));
+  const ringsYTo = Array.from(rings).map(r => gsap.quickTo(r, "y", {duration: 1.2, ease: "power3"}));
+
+  document.getElementById('hero').addEventListener("mousemove", (e) => {
+    const rect = visualWrap.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const normX = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth / 2)));
+    const normY = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight / 2)));
+    
+    xTo(normX * 50);
+    yTo(normY * 50);
+    rotXTo(-normY * 25);
+    rotYTo(normX * 25);
+
+    ringsXTo.forEach((to, i) => to(normX * -20 * (i + 1)));
+    ringsYTo.forEach((to, i) => to(normY * -20 * (i + 1)));
+  });
+  
+  document.getElementById('hero').addEventListener("mouseleave", () => {
+    xTo(0); yTo(0); rotXTo(0); rotYTo(0);
+    ringsXTo.forEach(to => to(0));
+    ringsYTo.forEach(to => to(0));
   });
 
   // Canvas
@@ -651,7 +1066,44 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=200', scrub: true }
   });
 
+  // ===== NEW SECTIONS ANIMATIONS =====
+  
+  // Alternating Folds Fade & Y reveal
+  gsap.utils.toArray('.pf-text').forEach(textBlock => {
+    gsap.fromTo(textBlock, 
+      { y: 50, opacity: 0 },
+      { scrollTrigger: { trigger: textBlock, start: "top 85%" }, y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+    );
+  });
 
+  // Parallax Images Y-Axis scrub
+  gsap.utils.toArray('.reveal-parallax').forEach(wrap => {
+    const img = wrap.querySelector('.px-image');
+    
+    // Scale container in
+    gsap.fromTo(wrap,
+      { y: 50, opacity: 0, scale: 0.96 },
+      { scrollTrigger: { trigger: wrap, start: "top 90%" }, y: 0, opacity: 1, scale: 1, duration: 1.5, ease: "power3.out" }
+    );
+
+    // Subtle scale inwards on image during scroll (instead of Parallax Y tracking)
+    // Ensures image never 'leaks' outside the aspect ratio edges
+    if (img) {
+      gsap.fromTo(img, 
+        { scale: 1.07 },
+        {
+          scale: 1, 
+          ease: "none",
+          scrollTrigger: {
+            trigger: wrap,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true
+          }
+        }
+      );
+    }
+  });
 
   // ===== KNOWLEDGE NETWORK CANVAS =====
   initCanvas();
@@ -663,6 +1115,16 @@ function initCanvas() {
   const ctx = canvas.getContext('2d');
   let w, h, nodes = [], animId;
   const count = window.innerWidth < 768 ? 30 : 50;
+
+  let mouseCtx = { x: -1000, y: -1000 };
+  canvas.parentElement.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseCtx.x = e.clientX - rect.left;
+    mouseCtx.y = e.clientY - rect.top;
+  });
+  canvas.parentElement.addEventListener('mouseleave', () => {
+    mouseCtx.x = -1000; mouseCtx.y = -1000;
+  });
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -686,6 +1148,7 @@ function initCanvas() {
       nodes.push({
         x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r,
         ox: cx + Math.cos(angle) * r, oy: cy + Math.sin(angle) * r,
+        vx: 0, vy: 0,
         size: 1.2 + Math.random() * 2.5,
         speed: 0.12 + Math.random() * 0.28,
         phase: Math.random() * Math.PI * 2,
@@ -701,8 +1164,31 @@ function initCanvas() {
     const time = t * 0.001;
 
     nodes.forEach(n => {
-      n.x = n.ox + Math.sin(time * n.speed + n.phase) * n.amp;
-      n.y = n.oy + Math.cos(time * n.speed * 0.7 + n.phase) * n.amp * 0.6;
+      // Base oscillation target
+      let targetX = n.ox + Math.sin(time * n.speed + n.phase) * n.amp;
+      let targetY = n.oy + Math.cos(time * n.speed * 0.7 + n.phase) * n.amp * 0.6;
+
+      // Mouse repulsion for organic fluidity
+      if (mouseCtx.x > -1000) {
+        const dx = mouseCtx.x - targetX;
+        const dy = mouseCtx.y - targetY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const radius = 140;
+        if (dist < radius) {
+          const force = Math.pow((radius - dist) / radius, 1.5);
+          targetX -= (dx / dist) * force * 40; 
+          targetY -= (dy / dist) * force * 40;
+        }
+      }
+
+      // Smooth interpolation using velocity
+      n.vx += (targetX - n.x) * 0.05;
+      n.vy += (targetY - n.y) * 0.05;
+      n.vx *= 0.85; // friction
+      n.vy *= 0.85;
+      
+      n.x += n.vx;
+      n.y += n.vy;
     });
 
     const connDist = Math.min(w, h) * 0.22;
