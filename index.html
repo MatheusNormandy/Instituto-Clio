@@ -516,6 +516,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   transform: translateZ(0);
   -webkit-mask-image: -webkit-radial-gradient(white, black);
   mask-image: radial-gradient(white, black);
+  transition: box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.project-fold:hover .pf-image-wrap {
+  box-shadow: 0 40px 80px rgba(62,137,163,0.25);
+  transform: translateY(-8px);
 }
 .pf-image-wrap img {
   width: 100%;
@@ -525,16 +530,23 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   will-change: transform;
 }
 .project-fold:hover .pf-image-wrap img {
-  transform: scale(1.08); /* Efeito ao colocar o mouse */
+  transform: scale(1.06); /* Efeito ao colocar o mouse */
 }
 .pf-overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(62,137,163, 0.04);
   pointer-events: none;
+  transition: background-color 0.8s ease;
+}
+.project-fold:hover .pf-overlay {
+  background-color: rgba(62,137,163, 0);
 }
 .pf-text {
   max-width: 32rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 .pf-title {
   font-family: 'DM Sans', sans-serif;
@@ -543,7 +555,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   letter-spacing: -0.04em;
   color: var(--color-text);
   line-height: 1.1;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 .pf-title span {
   font-family: 'Cormorant Garamond', serif;
@@ -555,6 +567,36 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   line-height: 1.8;
   color: var(--color-text-light);
   font-weight: 300;
+}
+
+/* Novo Efeito de badge shimer e slide para animar a entrada dos textos de forma vívida */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 1rem;
+  background: var(--color-bg-alt2);
+  border-radius: 20px;
+  width: fit-content;
+  position: relative;
+  overflow: hidden;
+}
+.section-tag::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.7), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.7s ease;
+}
+.project-fold:hover .section-tag::before {
+  left: 150%;
+  transition-duration: 1.2s;
 }
 
 /* ========== FOOTER ========== */
@@ -1126,22 +1168,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== NEW SECTIONS ANIMATIONS =====
   
-  // Alternating Folds Fade & Y reveal
-  gsap.utils.toArray('.pf-text').forEach(textBlock => {
-    gsap.fromTo(textBlock, 
-      { y: 50, opacity: 0 },
-      { scrollTrigger: { trigger: textBlock, start: "top 85%" }, y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+  // Staggered Text Reveal for Project Folds
+  gsap.utils.toArray('.project-fold').forEach(fold => {
+    const textBlock = fold.querySelector('.pf-text');
+    const tag = fold.querySelector('.section-tag');
+    const title = fold.querySelector('.pf-title');
+    const desc = fold.querySelector('.pf-desc');
+    
+    // Smooth, organic stagger for text parts
+    gsap.fromTo([tag, title, desc], 
+      { y: 40, opacity: 0 },
+      { 
+        y: 0, 
+        opacity: 1, 
+        duration: 1.2, 
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: { 
+          trigger: textBlock, 
+          start: "top 85%" 
+        }
+      }
     );
   });
 
-  // Parallax Images Y-Axis scrub
+  // Parallax Images Y-Axis & Scale entry
   gsap.utils.toArray('.reveal-parallax').forEach(wrap => {
     const img = wrap.querySelector('.px-image');
     
-    // Scale container in
+    // Scale and drift container in with spring-like cubic bezier
     gsap.fromTo(wrap,
-      { y: 50, opacity: 0, scale: 0.96 },
-      { scrollTrigger: { trigger: wrap, start: "top 90%" }, y: 0, opacity: 1, scale: 1, duration: 1.5, ease: "power3.out" }
+      { y: 80, opacity: 0, scale: 0.92, rotationX: 4 },
+      { 
+        y: 0, 
+        opacity: 1, 
+        scale: 1, 
+        rotationX: 0,
+        duration: 1.6, 
+        ease: "elastic.out(1, 0.85)", // Adds sophisticated elasticity
+        scrollTrigger: { trigger: wrap, start: "top 90%" }
+      }
     );
 
     // Subtle scale inwards on image during scroll (instead of Parallax Y tracking)
