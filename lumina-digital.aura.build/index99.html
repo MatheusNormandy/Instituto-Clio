@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Instituto Clio — Memória, Tecnologia e Impacto Social</title>
+<meta name="description" content="Instituição dedicada à preservação da memória histórico-cultural, ciência da informação, digitalização de acervos e pesquisa com impacto social."/>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+/* ========== DESIGN TOKENS ========== */
+:root {
+  --color-bg: #FFFFFF;
+  --color-bg-warm: #EEF7F9;
+  --color-primary: #3E89A3;
+  --color-primary-alt: #519BB5;
+  --color-text: #1A3D4F;
+  --color-text-light: #2D607A;
+  --color-bg-alt: #C3E4E9;
+  --color-bg-alt2: #E6F4F7;
+  --color-accent: #7AC1D7;
+  --color-accent-alt: #C3E4E9;
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fade: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-scroll: cubic-bezier(0.22, 1, 0.36, 1);
+  --container-max: 80rem;
+  --nav-pad: 1.5rem;
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+::selection { background: var(--color-primary); color: #fff; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+
+/* ========== GRID LINES (design-system) ========== */
+.grid-lines {
+  position: fixed; inset: 0; width: 100%; max-width: var(--container-max);
+  margin: 0 auto; pointer-events: none; z-index: 0;
+  display: flex; justify-content: space-between; padding: 0 var(--nav-pad);
+  opacity: 0.3;
+}
+.grid-line { width: 1px; height: 100%; background: var(--color-bg-alt); }
+
+/* ========== NAVBAR (design-system pattern) ========== */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem var(--nav-pad);
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid transparent;
+  transition: all 0.6s ease;
+}
+.navbar.scrolled {
+  border-bottom-color: rgba(195,228,233,0.5);
+  box-shadow: 0 2px 40px rgba(62,137,163,0.06);
+  padding: 0.75rem var(--nav-pad);
+}
+.navbar-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; max-width: var(--container-max);
+}
+.logo-link {
+  display: flex; align-items: center; gap: 0.5rem;
+  transition: opacity 0.4s ease;
+}
+.logo-link:hover { opacity: 0.8; }
+.logo-link img {
+  height: 36px; width: auto;
+  transition: transform 0.7s var(--ease-reveal);
+}
+.logo-link:hover img { transform: scale(1.06) rotate(-2deg); }
+.logo-text {
+  font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 600;
+  letter-spacing: -0.03em; text-transform: uppercase; color: var(--color-text);
+}
+.logo-text span { font-weight: 300; color: var(--color-primary); }
+
+.nav-links { display: none; align-items: center; gap: 2rem; }
+.nav-links a {
+  font-size: 0.8rem; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.02em; color: var(--color-text-light);
+  transition: color 0.4s ease; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 1.5px; background: var(--color-primary);
+  transition: width 0.5s var(--ease-reveal);
+}
+.nav-links a:hover { color: var(--color-primary); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta {
+  display: none; align-items: center; gap: 0.5rem;
+  padding: 0.6rem 1.25rem; background: var(--color-primary); color: #fff;
+  font-size: 0.8rem; font-weight: 500; border-radius: 9999px;
+  transition: all 0.4s var(--ease-reveal);
+  box-shadow: 0 2px 16px rgba(62,137,163,0.2);
+}
+.nav-cta:hover { background: var(--color-text); transform: scale(1.04); }
+.nav-cta svg { width: 15px; height: 15px; transition: transform 0.4s ease; }
+.nav-cta:hover svg { transform: translateX(2px); }
+
+/* Mobile Toggle */
+.menu-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border: 1px solid var(--color-bg-alt);
+  border-radius: 10px; transition: all 0.3s ease;
+}
+.menu-toggle:hover { background: var(--color-bg-alt2); }
+.menu-toggle span { display: flex; flex-direction: column; gap: 5px; width: 18px; }
+.menu-toggle span i {
+  display: block; height: 1.5px; background: var(--color-text);
+  border-radius: 2px; transition: all 0.4s var(--ease-reveal);
+}
+.menu-toggle.active span i:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.menu-toggle.active span i:nth-child(2) { opacity: 0; }
+.menu-toggle.active span i:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* Mobile Menu */
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 99;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(24px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1.75rem; opacity: 0; pointer-events: none; transition: opacity 0.5s var(--ease-fade);
+}
+.mobile-menu.open { opacity: 1; pointer-events: all; }
+.mobile-menu a {
+  font-family: 'DM Sans', sans-serif; font-size: 1.5rem; font-weight: 300;
+  letter-spacing: -0.03em; color: var(--color-text);
+  transform: translateY(20px); opacity: 0; transition: color 0.3s ease;
+}
+.mobile-menu a:hover { color: var(--color-primary); }
+
+/* ========== HERO ========== */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 7rem var(--nav-pad) 3rem; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233E89A3' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+.hero-ambient {
+  position: absolute; top: -25%; right: -20%; width: 75%; height: 130%;
+  background: radial-gradient(ellipse at 55% 45%, rgba(195,228,233,0.35) 0%, rgba(230,244,247,0.15) 40%, transparent 70%);
+  pointer-events: none; z-index: 0;
+  animation: ambientBreathe 14s ease-in-out infinite alternate;
+}
+.hero-ambient-2 {
+  position: absolute; bottom: -10%; left: -10%; width: 50%; height: 60%;
+  background: radial-gradient(ellipse at 40% 60%, rgba(122,193,215,0.12) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+  animation: ambientBreathe 18s ease-in-out infinite alternate-reverse;
+}
+@keyframes ambientBreathe {
+  0% { opacity: 0.5; transform: scale(1) translate(0,0); }
+  100% { opacity: 1; transform: scale(1.1) translate(-2%,3%); }
+}
+
+.container { max-width: var(--container-max); margin: 0 auto; width: 100%; }
+
+.hero-grid {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center;
+}
+
+/* ========== HERO TEXT ========== */
+.hero-text { max-width: 38rem; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(8px);
+  border: 1px solid var(--color-bg-alt); border-radius: 9999px;
+  margin-bottom: 2rem; opacity: 0; transform: translateY(20px);
+  box-shadow: 0 1px 8px rgba(62,137,163,0.06);
+}
+.pulse-dot {
+  width: 6px; height: 6px; background: var(--color-primary);
+  border-radius: 50%; animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+.hero-badge span {
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--color-text-light);
+}
+
+/* Headline — design-system H1 + line-mask reveal */
+.hero-headline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(2.25rem, 5.5vw, 4.75rem);
+  font-weight: 300; line-height: 0.92; letter-spacing: -0.04em;
+  color: var(--color-text); margin-bottom: 1.5rem;
+}
+.line-mask { overflow: hidden; display: block; padding-bottom: 0.05em; }
+.reveal-text {
+  display: block; transform: translateY(115%);
+  will-change: transform;
+}
+.headline-accent {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-weight: 400; color: var(--color-primary);
+}
+.headline-highlight { color: var(--color-primary); }
+
+/* Subheadline — design-system paragraph L */
+.hero-sub {
+  font-size: clamp(0.95rem, 1.6vw, 1.125rem); font-weight: 300;
+  line-height: 1.75; color: var(--color-text-light);
+  max-width: 30rem; margin-bottom: 2.25rem;
+  opacity: 0; transform: translateY(20px);
+}
+
+/* CTAs — design-system button patterns */
+.hero-ctas {
+  display: flex; align-items: center; gap: 0.875rem; flex-wrap: wrap;
+  opacity: 0; transform: translateY(20px);
+}
+.cta-primary {
+  display: inline-flex; align-items: center; gap: 0.625rem;
+  padding: 0.8125rem 1.625rem; background: var(--color-primary); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+  border-radius: 9999px;
+  transition: all 0.4s var(--ease-reveal);
+  box-shadow: 0 3px 20px rgba(62,137,163,0.18);
+}
+.cta-primary:hover { background: var(--color-text); transform: scale(1.05); box-shadow: 0 6px 32px rgba(26,61,79,0.22); }
+.cta-primary svg { width: 16px; height: 16px; transition: transform 0.4s var(--ease-reveal); }
+.cta-primary:hover svg { transform: translateX(3px); }
+
+.cta-secondary {
+  display: inline-flex; align-items: center; gap: 0.625rem;
+  padding: 0.8125rem 1.375rem; background: transparent; color: var(--color-text);
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+  border-radius: 9999px; border: 1px solid var(--color-bg-alt);
+  transition: all 0.4s ease;
+}
+.cta-secondary:hover { background: var(--color-bg-alt2); border-color: var(--color-accent); color: var(--color-primary); }
+.cta-secondary svg { width: 16px; height: 16px; transition: transform 0.4s ease; }
+.cta-secondary:hover svg { transform: translateY(2px); }
+
+/* ========== HERO VISUAL — Logo + Canvas ========== */
+.hero-visual {
+  position: relative; width: 100%; aspect-ratio: 1;
+  max-width: 480px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-visual-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0;
+}
+.hero-logo-float {
+  position: relative; z-index: 2; width: 55%; max-width: 260px;
+  filter: drop-shadow(0 8px 40px rgba(62,137,163,0.15));
+  opacity: 0; transform: scale(0.8);
+  animation: logoBreathe 8s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.hero-logo-float.active { animation-play-state: running; }
+@keyframes logoBreathe {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-8px) scale(1.02); }
+}
+
+/* Orbital rings */
+.orbital { position: absolute; border: 1px solid; border-radius: 50%; opacity: 0; }
+.orbital-1 { width: 100%; height: 100%; top: 0; left: 0; border-color: rgba(195,228,233,0.5); }
+.orbital-2 { width: 72%; height: 72%; top: 14%; left: 14%; border-color: rgba(195,228,233,0.35); }
+.orbital-3 { width: 44%; height: 44%; top: 28%; left: 28%; border-color: rgba(195,228,233,0.25); }
+
+/* ========== CARDS SECTION (design-system service card) ========== */
+.hero-cards {
+  position: relative; z-index: 2; margin-top: 4rem;
+  display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+}
+/* Service Card — design-system pattern: border-t, mono numeral, icon hover color */
+.service-card {
+  background: rgba(255,255,255,0.6); backdrop-filter: blur(8px);
+  border: 1px solid rgba(195,228,233,0.5); border-radius: 1.25rem;
+  padding: 1.75rem; cursor: pointer;
+  transition: all 0.5s var(--ease-reveal);
+  opacity: 0; transform: translateY(40px);
+}
+.service-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 8px 40px rgba(62,137,163,0.08);
+  transform: translateY(-4px);
+}
+.service-card-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 1rem;
+}
+/* Mono numeral — from design-system text-sm font-mono text-zinc-400 */
+.card-number {
+  font-size: 0.8rem; font-family: 'Inter', monospace; font-weight: 400;
+  color: var(--color-accent); letter-spacing: 0.02em;
+}
+/* Icon container — design-system: p-3 bg-zinc-100 rounded-2xl hover:bg-indigo-50 */
+.card-icon-wrap {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: var(--color-bg-alt2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.5s ease;
+}
+.service-card:hover .card-icon-wrap { background: rgba(62,137,163,0.12); }
+.card-icon-wrap svg {
+  width: 24px; height: 24px; color: var(--color-text-light);
+  transition: color 0.5s ease;
+}
+.service-card:hover .card-icon-wrap svg { color: var(--color-primary); }
+/* Card title — design-system: text-2xl font-display font-medium */
+.card-title {
+  font-family: 'DM Sans', sans-serif; font-size: 1.2rem; font-weight: 500;
+  letter-spacing: -0.02em; color: var(--color-text); margin-bottom: 0.5rem;
+}
+.card-desc {
+  font-size: 0.85rem; line-height: 1.65; color: var(--color-text-light);
+  font-weight: 300;
+}
+
+/* Arrow button — from design-system: w-10 h-10 rounded-full border hover:bg-zinc-900 hover:text-white */
+.card-arrow {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--color-bg-alt);
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1rem;
+  transition: all 0.4s var(--ease-reveal);
+}
+.card-arrow svg { width: 16px; height: 16px; color: var(--color-text-light); transition: color 0.3s ease; }
+.service-card:hover .card-arrow {
+  background: var(--color-primary); border-color: var(--color-primary);
+}
+.service-card:hover .card-arrow svg { color: #fff; }
+
+
+
+/* ========== SCROLL INDICATOR ========== */
+.scroll-indicator {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  opacity: 0; z-index: 2;
+}
+.scroll-indicator span {
+  font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--color-text-light); opacity: 0.5;
+}
+.scroll-line {
+  width: 1px; height: 36px;
+  background: linear-gradient(to bottom, var(--color-primary), transparent);
+  animation: scrollPulse 2.5s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { opacity: 0.3; transform: scaleY(0.6); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (min-width: 768px) {
+  .nav-links { display: flex; }
+  .nav-cta { display: inline-flex; }
+  .menu-toggle { display: none; }
+  .hero { padding: 0 var(--nav-pad); min-height: 100vh; }
+  .hero-grid { grid-template-columns: 1.15fr 0.85fr; gap: 3rem; }
+  .hero-cards { grid-template-columns: repeat(3, 1fr); }
+  .hero-visual { max-width: 100%; }
+}
+@media (min-width: 1024px) {
+  .hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 4.5rem; }
+  .hero-headline { font-size: clamp(3.25rem, 4.2vw, 4.5rem); }
+}
+@media (max-width: 767px) {
+  .hero { min-height: auto; padding-top: 5.5rem; padding-bottom: 2.5rem; }
+  .hero-headline { font-size: 2.125rem; }
+  .hero-visual { max-width: 280px; order: -1; }
+  .hero-metrics { gap: 1.25rem; flex-wrap: wrap; }
+  .metric-value { font-size: 1.375rem; }
+  .scroll-indicator { display: none; }
+  .grid-lines .grid-line:nth-child(2),
+  .grid-lines .grid-line:nth-child(3) { display: none; }
+  .hero-cards { gap: 1rem; }
+}
+
+/* ========== PREFERS REDUCED MOTION ========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal-text { transform: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Grid Lines -->
+<div class="grid-lines" aria-hidden="true">
+  <div class="grid-line"></div><div class="grid-line"></div>
+  <div class="grid-line"></div><div class="grid-line"></div>
+</div>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#atuacao" onclick="closeMobileMenu()">Atuação</a>
+  <a href="#projetos" onclick="closeMobileMenu()">Projetos</a>
+  <a href="#pesquisa" onclick="closeMobileMenu()">Pesquisa</a>
+  <a href="#publicacoes" onclick="closeMobileMenu()">Publicações</a>
+  <a href="#contato" onclick="closeMobileMenu()">Contato</a>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="#" class="logo-link" aria-label="Instituto Clio">
+      <img src="./logo-clio.png" alt="Instituto Clio" />
+      <div class="logo-text">Instituto <span>Clio</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#atuacao">Atuação</a></li>
+      <li><a href="#projetos">Projetos</a></li>
+      <li><a href="#pesquisa">Pesquisa</a></li>
+      <li><a href="#publicacoes">Publicações</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+    <a href="#contato" class="nav-cta">
+      Fale Conosco
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+      <span><i></i><i></i><i></i></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-ambient" aria-hidden="true"></div>
+  <div class="hero-ambient-2" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- TEXT -->
+      <div class="hero-text">
+        <div class="hero-badge" id="heroBadge">
+          <div class="pulse-dot"></div>
+          <span>Preservação · Pesquisa · Impacto</span>
+        </div>
+
+        <h1 class="hero-headline">
+          <span class="line-mask"><span class="reveal-text">Onde a</span></span>
+          <span class="line-mask"><span class="reveal-text headline-accent">memória</span></span>
+          <span class="line-mask"><span class="reveal-text">se torna</span></span>
+          <span class="line-mask"><span class="reveal-text">infraestrutura</span></span>
+          <span class="line-mask"><span class="reveal-text headline-highlight">do futuro.</span></span>
+        </h1>
+
+        <p class="hero-sub" id="heroSub">
+          Ciência da informação, tecnologia e rigor científico aplicados à preservação do patrimônio cultural como ativo estratégico para a sociedade.
+        </p>
+
+        <div class="hero-ctas" id="heroCtas">
+          <a href="#projetos" class="cta-primary">
+            Conheça nossa atuação
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#pesquisa" class="cta-secondary">
+            Pesquisa e Publicações
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M7 17V7h10"/></svg>
+          </a>
+        </div>
+
+
+      </div>
+
+      <!-- VISUAL -->
+      <div class="hero-visual" id="heroVisual">
+        <canvas id="networkCanvas" class="hero-visual-canvas"></canvas>
+        <div class="orbital orbital-1"></div>
+        <div class="orbital orbital-2"></div>
+        <div class="orbital orbital-3"></div>
+        <img src="./logo-clio.png" alt="" class="hero-logo-float" id="heroLogo" aria-hidden="true"/>
+      </div>
+    </div>
+
+    <!-- SERVICE CARDS — design-system service card pattern -->
+    <div class="hero-cards" id="heroCards">
+      <!-- Card 1 -->
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="card-number">01</span>
+          <div class="card-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="card-title">Preservação de Acervos</h3>
+        <p class="card-desc">Digitalização e catalogação de patrimônios documentais com rigor arquivístico e padrões internacionais.</p>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="card-number">02</span>
+          <div class="card-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="card-title">Pesquisa Científica</h3>
+        <p class="card-desc">Produção de conhecimento acadêmico sobre memória, informação e cultura com impacto social mensurável.</p>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="card-number">03</span>
+          <div class="card-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="card-title">Tecnologia e Inovação</h3>
+        <p class="card-desc">Infraestruturas digitais para acesso, gestão e disseminação de acervos culturais e históricos.</p>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator" id="scrollIndicator">
+    <span>Explorar</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ========== SCRIPTS ========== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Mobile menu
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active');
+    mobileMenu.classList.toggle('open');
+    document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    if (mobileMenu.classList.contains('open')) {
+      gsap.fromTo(mobileMenu.querySelectorAll('a'),
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power4.out', delay: 0.15 }
+      );
+    }
+  });
+  window.closeMobileMenu = () => {
+    menuToggle.classList.remove('active');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // ===== HERO ANIMATION TIMELINE =====
+  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+  // Badge
+  tl.to('#heroBadge', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.2);
+
+  // Masked word reveal — design-system: y:100%→0%, power4.out, 1.5s, stagger 0.15s
+  tl.fromTo('.reveal-text',
+    { y: '115%' },
+    { y: '0%', duration: 1.5, stagger: 0.15 },
+    0.5
+  );
+
+  // Subheadline — design-system: opacity:0→1, y:20→0, power2.out, 1s
+  tl.to('#heroSub', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 1.5);
+
+  // CTAs
+  tl.to('#heroCtas', { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 1.8);
+
+
+
+  // Logo reveal
+  tl.to('#heroLogo', {
+    opacity: 1, scale: 1, duration: 1.8, ease: 'power4.out',
+    onComplete: () => document.getElementById('heroLogo').classList.add('active')
+  }, 0.8);
+
+  // Orbital rings — design-system: scroll-reveal stagger
+  tl.to('.orbital', { opacity: 1, duration: 1.5, stagger: 0.2, ease: 'power3.out' }, 1);
+
+  // Slow orbital rotation — reinterpreting marquee endless motion
+  document.querySelectorAll('.orbital').forEach((ring, i) => {
+    gsap.to(ring, {
+      rotation: i % 2 === 0 ? 360 : -360,
+      duration: 100 + i * 30, repeat: -1, ease: 'none'
+    });
+  });
+
+  // Canvas
+  tl.fromTo('#networkCanvas', { opacity: 0 }, { opacity: 1, duration: 2, ease: 'power2.out' }, 0.6);
+
+  // Service Cards — design-system scroll-reveal: opacity:0→1, y:50→0, power3.out, 1s, stagger
+  tl.to('.service-card', {
+    opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out'
+  }, 2.4);
+
+  // Scroll indicator
+  tl.to('#scrollIndicator', { opacity: 1, duration: 1, ease: 'power2.out' }, 3);
+  gsap.to('#scrollIndicator', {
+    opacity: 0, ease: 'none',
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=200', scrub: true }
+  });
+
+
+
+  // ===== KNOWLEDGE NETWORK CANVAS =====
+  initCanvas();
+});
+
+function initCanvas() {
+  const canvas = document.getElementById('networkCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, nodes = [], animId;
+  const count = window.innerWidth < 768 ? 30 : 50;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = rect.width; h = rect.height;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function createNodes() {
+    nodes = [];
+    const cx = w / 2, cy = h / 2, maxR = Math.min(w, h) * 0.46;
+    for (let i = 0; i < count; i++) {
+      const zone = Math.random();
+      let r;
+      if (zone < 0.2) r = maxR * 0.12 * Math.random();
+      else if (zone < 0.5) r = maxR * (0.22 + 0.28 * Math.random());
+      else r = maxR * (0.52 + 0.48 * Math.random());
+      const angle = Math.random() * Math.PI * 2;
+      nodes.push({
+        x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r,
+        ox: cx + Math.cos(angle) * r, oy: cy + Math.sin(angle) * r,
+        size: 1.2 + Math.random() * 2.5,
+        speed: 0.12 + Math.random() * 0.28,
+        phase: Math.random() * Math.PI * 2,
+        amp: 2 + Math.random() * 9,
+        opacity: 0.15 + Math.random() * 0.5,
+        zone: zone < 0.2 ? 0 : (zone < 0.5 ? 1 : 2)
+      });
+    }
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, w, h);
+    const time = t * 0.001;
+
+    nodes.forEach(n => {
+      n.x = n.ox + Math.sin(time * n.speed + n.phase) * n.amp;
+      n.y = n.oy + Math.cos(time * n.speed * 0.7 + n.phase) * n.amp * 0.6;
+    });
+
+    const connDist = Math.min(w, h) * 0.22;
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[j].x - nodes[i].x;
+        const dy = nodes[j].y - nodes[i].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < connDist) {
+          const alpha = (1 - dist / connDist) * 0.1;
+          ctx.strokeStyle = `rgba(62,137,163,${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+        // Data flow particles
+        if (dist < connDist * 0.65 && (i + j) % 4 === 0) {
+          const p = Math.sin(time * 0.7 + i * 0.4) * 0.5 + 0.5;
+          const px = nodes[i].x + dx * p;
+          const py = nodes[i].y + dy * p;
+          ctx.fillStyle = `rgba(122,193,215,${(1 - dist / connDist) * 0.35})`;
+          ctx.beginPath();
+          ctx.arc(px, py, 1.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    nodes.forEach(n => {
+      // Glow
+      const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.size * 4);
+      g.addColorStop(0, `rgba(62,137,163,${n.opacity * 0.12})`);
+      g.addColorStop(1, 'rgba(62,137,163,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.size * 4, 0, Math.PI * 2);
+      ctx.fill();
+      // Dot
+      ctx.fillStyle = `rgba(62,137,163,${n.zone === 0 ? n.opacity * 1.3 : n.opacity})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  createNodes();
+  requestAnimationFrame(draw);
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      cancelAnimationFrame(animId);
+      resize(); createNodes();
+      requestAnimationFrame(draw);
+    }, 200);
+  });
+}
+</script>
+</body>
+</html>
