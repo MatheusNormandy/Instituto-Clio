@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: /sitemap.xml
+
+# Disallow sensitive directories
+Disallow: /src/
+Disallow: /security/
+Disallow: /scripts/
+Disallow: /tests/
+Disallow: /docs/
+Disallow: /.env
